@@ -1,5 +1,3 @@
-import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
-
 function SearchBar() {
   return (
     <form>
@@ -62,21 +60,118 @@ function SearchBar() {
   );
 }
 
+interface Product {
+  category: string;
+  price: string;
+  stocked: boolean;
+  name: string;
+}
+
+interface ProductCategoryRowProps {
+  category: string;
+}
+
 interface ProductTableProps {
-  products: object;
+  products: Product[];
+}
+
+interface ProductRowProps {
+  product: Product;
+  rowNumber: number;
+}
+
+function ProductCategoryRow({ category }: ProductCategoryRowProps) {
+  return (
+    <tr>
+      <th
+        scope="col"
+        className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
+      >
+        {category}
+      </th>
+    </tr>
+  );
+}
+
+function ProductRow({ product, rowNumber }: ProductRowProps) {
+  const name: string | JSX.Element = product.stocked ? (
+    product.name
+  ) : (
+    <span style={{ color: "red" }}> {product.name}</span>
+  );
+  return (
+    <tr className="bg-gray-100 border-b">
+      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+        {rowNumber}
+      </td>
+      <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+        {name}
+      </td>
+      <td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+        {product.price}
+      </td>
+    </tr>
+  );
 }
 
 function ProductTable({ products }: ProductTableProps) {
+  const rows: JSX.Element[] = [];
+  let lastCategory: string = "";
+  let rowNumber: number = 1;
+  products.forEach((product) => {
+    if (product.category !== lastCategory) {
+      rows.push(
+        <ProductCategoryRow
+          category={product.category}
+          key={product.category}
+        />
+      );
+    }
+    rows.push(
+      <ProductRow product={product} rowNumber={rowNumber} key={product.name} />
+    );
+    lastCategory = product.category;
+    rowNumber += 1;
+  });
   return (
-    <>
-      <h3>Name</h3>
-      <h3>Price</h3>
-    </>
+    <div className="flex flex-col">
+      <div className="overflow-x-auto sm:mx-0.5 lg:mx-0.5">
+        <div className="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+          <div className="overflow-hidden">
+            <table className="min-w-full">
+              <thead className="bg-white border-b">
+                <tr>
+                  <th
+                    scope="col"
+                    className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
+                  >
+                    #
+                  </th>
+                  <th
+                    scope="col"
+                    className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
+                  >
+                    Name
+                  </th>
+                  <th
+                    scope="col"
+                    className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
+                  >
+                    Price
+                  </th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
 interface FilterableProductTableProps {
-  products: object;
+  products: Product[];
 }
 
 function FilterableProductTable({ products }: FilterableProductTableProps) {
