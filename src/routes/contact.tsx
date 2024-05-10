@@ -1,23 +1,31 @@
-import { Form } from "react-router-dom";
+import { Form, useLoaderData } from "react-router-dom";
+// @ts-ignore
+import { getContact } from "../contacts";
 
-type Contact = {
-  first: string;
-  last: string;
-  avatar: string;
-  twitter: string;
-  notes: string;
-  favorite: boolean;
-};
+export async function loader({ params}: any) {
+  const contact: Contact = await getContact(params.contactId);
+  return { contact };
+}
+
+export interface Contact {
+  first: string,
+  last: string,
+  avatar: string,
+  twitter: string,
+  notes: string,
+  favorite: boolean,
+}
 
 export default function Contact() {
-  const contact: Contact = {
-    first: "Your",
-    last: "Name",
-    avatar: "https://placekitten.com/200/200",
-    twitter: "your_handle",
-    notes: "Some notes",
-    favorite: true,
-  };
+  const { contact } = useLoaderData() as {contact : Contact};
+ // const contact: Contact = {
+ //   first: "Your",
+ //   last: "Name",
+ //   avatar: "https://placekitten.com/200/200",
+ //   twitter: "your_handle",
+ //   notes: "Some notes",
+ //   favorite: true,
+ // };
 
   return (
     <div id="contact">
